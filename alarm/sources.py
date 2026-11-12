@@ -136,9 +136,10 @@ def crypto_fear_greed():
 
 # ---------------------------------------------------------------- Credit (FRED)
 def fred_series(series_id):
-    # FRED stalls on browser-like User-Agents, so identify plainly.
-    text = _get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}", timeout=30,
-                retries=2, headers={"User-Agent": "market-alarm/1.0 (python-requests)"}).text
+    # FRED stalls on browser-like User-Agents, so identify plainly. It is often
+    # unreachable from cloud runners, so fail fast; HYG/IEF still covers credit.
+    text = _get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}", timeout=10,
+                retries=1, headers={"User-Agent": "market-alarm/1.0 (python-requests)"}).text
     rows = []
     for row in csv.reader(io.StringIO(text)):
         if len(row) == 2:
