@@ -92,8 +92,14 @@ home screen.
 
 ## Good to know
 
-- **Timing:** GitHub runs scheduled jobs every 15 minutes, but can start them 5–20 minutes late
-  when busy. This is an early-warning system, not a tick-by-tick trading feed.
+- **Timing:** GitHub's own scheduler proved unreliable for this repo (gaps of 5–8 hours), so a
+  free **cron-job.org** job ("Market Alarm trigger") POSTs to
+  `https://api.github.com/repos/aaronkwofie/market-alarm/actions/workflows/market-alarm.yml/dispatches`
+  every 15 minutes with body `{"ref":"main"}` and headers `Accept: application/vnd.github+json`,
+  `Content-Type: application/json` and `Authorization: Bearer <token>`. The token is a fine-grained
+  GitHub token named `market-alarm-cron` (this repo only, Actions read/write) that **expires on
+  13 Nov 2027**: before then, create a new one and paste it into the cron-job.org job. The GitHub
+  schedule stays on as a backup.
 - **Keeping it alive:** GitHub pauses scheduled jobs in repos with no activity for 60 days. The bot
   saves its state back to the repo about once an hour, which counts as activity. If it ever pauses,
   GitHub e-mails the owner and it can be re-enabled from the Actions tab.
